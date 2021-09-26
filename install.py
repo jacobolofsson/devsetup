@@ -4,7 +4,12 @@ import logging
 import pathlib
 import sys
 
-from git.repo import Repo
+try:
+    from git.repo import Repo
+except ImportError:
+    Repo = None
+
+REPO_DIR = pathlib.Path(__file__).parent
 
 _logger = logging.getLogger(__file__)
 
@@ -26,7 +31,18 @@ def _create_symlink(src: pathlib.Path, dest: pathlib.Path) -> None:
 
 
 def check_version() -> None:
+    if not Repo:
+        _logger.warning(
+            "No VCS information avaliable. GitPython is not installed. "
+            "It can be installed by: python3 -m pip install gitpython"
+        )
+        return
+
     _logger.info("Checking if this repo is up to date")
+    repo = Repo(REPO_DIR)
+    if repo.is_dirty():
+        _logger.warning("Current repository is dirty")
+    # Todo check if behind upstream
 
 
 def install_packages() -> None:

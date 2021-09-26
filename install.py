@@ -11,13 +11,18 @@ _logger = logging.getLogger(__file__)
 
 def _create_symlink(src: pathlib.Path, dest: pathlib.Path) -> None:
     _logger.debug(f"Linking {src} -> {dest}")
-    if dest.exists():
+
+    if dest.is_symlink():
+        _logger.info(f"'{dest}' already symlinked")
+        if not dest.samefile(src):
+            _logger.warning(f"'{dest}' points to '{dest.resolve()}'")
+    elif dest.exists():
         _logger.warning(
             f"Symlink destination '{dest}' for source '{src}' already exists. "
             "Skipping.",
         )
     else:
-        dest.symlink_to(src)
+        dest.symlink_to(src.absolute())
 
 
 def check_version() -> None:

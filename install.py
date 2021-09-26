@@ -11,6 +11,13 @@ _logger = logging.getLogger(__file__)
 
 def _create_symlink(src: pathlib.Path, dest: pathlib.Path) -> None:
     _logger.debug(f"Linking {src} -> {dest}")
+    if dest.exists():
+        _logger.warning(
+            f"Symlink destination '{dest}' for source '{src}' already exists. "
+            "Skipping.",
+        )
+    else:
+        dest.symlink_to(src)
 
 
 def check_version() -> None:
@@ -23,6 +30,8 @@ def install_packages() -> None:
 
 def link_config_files() -> None:
     _logger.info("Symlinking config files")
+    for dotfile in REPO_DIR.glob("dotfiles/*"):
+        _create_symlink(dotfile, pathlib.Path.home() / dotfile.name)
 
 
 def validate_setup() -> None:

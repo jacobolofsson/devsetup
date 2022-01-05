@@ -2,6 +2,7 @@
 
 import logging
 import pathlib
+import subprocess
 import sys
 
 try:
@@ -10,6 +11,10 @@ except ImportError:
     Repo = None
 
 REPO_DIR = pathlib.Path(__file__).parent
+SCRIPT_DIR = REPO_DIR / "scripts"
+SCRIPTS = {
+    SCRIPT_DIR / "unix.sh": "bash",
+}
 
 _logger = logging.getLogger(__file__)
 
@@ -45,6 +50,12 @@ def check_version() -> None:
     # Todo check if behind upstream
 
 
+def run_scripts() -> None:
+    _logger.info("Running scripts")
+    for script, interpreter in SCRIPTS.items():
+        _logger.info(f"Running {script}")
+        subprocess.check_call([interpreter, script])
+
 def install_packages() -> None:
     _logger.info("Installing packages")
 
@@ -67,6 +78,7 @@ def main() -> int:
     )
 
     check_version()
+    run_scripts()
     install_packages()
     link_config_files()
 

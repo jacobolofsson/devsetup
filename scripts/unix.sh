@@ -19,4 +19,7 @@ chmod u+rw ~/.poshthemes/*.json
 rm ~/.poshthemes/themes.zip
 echo "Downloaded posh themes"
 
+sudo apt install fzf
+echo "Installed fzf"
+
 exit 0
